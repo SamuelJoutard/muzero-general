@@ -273,7 +273,9 @@ class Splendor:
         self.n_players = 3
 
         self.it = 0
-        return self.get_observation()
+
+        obs = self.get_observation()
+        return obs
 
     def step(self, action):
         """
@@ -346,4 +348,11 @@ class Splendor:
         return self.get_observation(), reward, done
 
     def get_observation(self):
-        return np.concatenate([self.players[0].get_state(), self.players[1].get_state(), self.players[2].get_state(), self.game.get_state(), np.array([self.player])], axis=0)
+        return np.concatenate([self.players[0].get_state(), self.players[1].get_state(), self.players[2].get_state(), self.game.get_state(), np.array([self.player])], axis=0)[None, None, :]
+
+
+
+if __name__=="__main__":
+
+    game = Splendor()
+    print(game.reset().shape)

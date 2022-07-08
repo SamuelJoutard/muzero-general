@@ -204,4 +204,4 @@ nobles = np.array([
 ])
 # points # bl # r # g # b # w # cost bl # cost r # cost g # cost b # cost w
 
-print(deck0.shape, deck1.shape, deck2.shape)
+# print(deck0.shape, deck1.shape, deck2.shape)
