@@ -350,7 +350,8 @@ class Splendor:
     def get_observation(self):
         return np.concatenate([self.players[0].get_state(), self.players[1].get_state(), self.players[2].get_state(), self.game.get_state(), np.array([self.player])], axis=0)[None, None, :]
 
-
+    def legal_actions(self):
+        return np.arange(285)
 
 if __name__=="__main__":
 
