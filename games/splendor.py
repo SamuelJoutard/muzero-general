@@ -143,7 +143,7 @@ class Game(AbstractGame):
     """
 
     def __init__(self, seed=None):
-        self.env = Splendor(seed)
+        self.env = Splendor()
 
     def step(self, action):
         """
