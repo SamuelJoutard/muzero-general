@@ -79,7 +79,7 @@ class Splendor_game(object):
 
     def check_nobles(self, player):
         current_colors = (player.cards_bought[:, None] * player.cards[:, 1:6]).sum(0)
-        additional_gems_needed = np.max(self.nobles - current_colors[None, :], 0).sum(1)
+        additional_gems_needed = np.maximum(self.nobles - current_colors[None, :], 0).sum(1)
         matching = (additional_gems_needed==0) * self.nobles_game
         idx = np.nonzero(matching)
         if len(idx)>0:

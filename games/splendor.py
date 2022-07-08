@@ -28,14 +28,14 @@ class MuZeroConfig:
 
 
         ### Game
-        self.observation_shape = ( 1,1,3*(187)+90+6+10+1) #90 cards + 6 types of chips, 1 flop and 3 players, reservation (3*90 cards) # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
+        self.observation_shape = ( 1,1,2*(187)+90+6+10+1) #90 cards + 6 types of chips, 1 flop and 3 players, reservation (3*90 cards) # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
         self.action_space = list(range(90+90+90+15)) # 90 buy cards, 90 pay reservation, 90 do reservation, 15 chips collection  # Fixed list of all possible actions. You should only edit the length
-        self.players = list(range(3)) # List of players. You should only edit the length
+        self.players = list(range(2)) # List of players. You should only edit the length
         self.stacked_observations = 0 # Number of previous observations and previous actions to add to the current observation
 
         # Evaluate
         self.muzero_player = 0 # Turn Muzero begins to play (0: MuZero plays first, 1: MuZero plays second)
-        self.opponent = None # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
+        self.opponent = "self" # Hard coded agent that MuZero faces to assess his progress in multiplayer games. It doesn't influence training. None, "random" or "expert" if implemented in the Game class
 
 
 
@@ -234,7 +234,7 @@ class Splendor:
         self.players = {
             0: Player(),
             1: Player(),
-            2: Player()
+            # 2: Player()
         }
         self.player = 0
 
@@ -259,14 +259,14 @@ class Splendor:
         }
 
     def to_play(self):
-        return self.it%3
+        return self.it%2
 
     def reset(self):
         self.game = Splendor_game()
         self.players = {
             0: Player(),
             1: Player(),
-            2: Player()
+            # 2: Player()
         }
         self.player = 0
 
@@ -306,12 +306,12 @@ class Splendor:
             if check_player==1:
                 player.pay_reservation(card_id)
                 reward = 1 + player.cards[card_id, 0]
-            check_noble = self.game.check_nobles(player)
-            if check_noble is not None:
-                for noble_idx in check_noble:
-                    self.game.collect_noble(noble_idx)
-                    reward += 3
-                    player.points += 3
+                check_noble = self.game.check_nobles(player)
+                if check_noble is not None:
+                    for noble_idx in check_noble:
+                        self.game.collect_noble(noble_idx)
+                        reward += 3
+                        player.points += 3
             else:
                 reward = -3
         
@@ -322,7 +322,7 @@ class Splendor:
             if check_player*check_splendor==1:
                 self.game.reserve_card(card_id)
                 player.reserve_card(card_id)
-                reward = 1 + player.cards[action, 0]
+                reward = 1 + player.cards[card_id, 0]
             else:
                 reward = -3
             
@@ -348,10 +348,11 @@ class Splendor:
         return self.get_observation(), reward, done
 
     def get_observation(self):
-        return np.concatenate([self.players[0].get_state(), self.players[1].get_state(), self.players[2].get_state(), self.game.get_state(), np.array([self.player])], axis=0)[None, None, :]
+        # return np.concatenate([self.players[0].get_state(), self.players[1].get_state(), self.players[2].get_state(), self.game.get_state(), np.array([self.player])], axis=0)[None, None, :]
+        return np.concatenate([self.players[0].get_state(), self.players[1].get_state(), self.game.get_state(), np.array([self.player])], axis=0)[None, None, :]
 
     def legal_actions(self):
-        return np.arange(285)
+        return np.arange(285).tolist()
 
 if __name__=="__main__":
 

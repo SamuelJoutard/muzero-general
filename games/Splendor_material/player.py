@@ -33,7 +33,7 @@ class Player(object):
     
     def check_collect_card(self, number):
         cost = self.cards[number, 6:]
-        gold_needed = (np.max(cost - self.coins[:5], 0)).sum()
+        gold_needed = (np.maximum(cost - self.coins[:5], 0)).sum()
         if gold_needed<=self.coins[5]:
             return 1
         else:
@@ -58,13 +58,13 @@ class Player(object):
         cost = self.cards[number, 6:]
         gold_to_pay = 0
         for i in range(5):
-            gold_to_pay += np.max(0, -self.coins[i]+cost[i])
-            self.coins[i] = np.max(0, self.coins[i]-cost[i])
+            gold_to_pay += np.maximum(0, -self.coins[i]+cost[i])
+            self.coins[i] = np.maximum(0, self.coins[i]-cost[i])
         self.coins[-1] -= gold_to_pay
 
     def check_pay_reservation(self, number):
         cost = self.cards[number, 6:]
-        gold_needed = (np.max(cost - self.coins[:5], 0)).sum()
+        gold_needed = (np.maximum(cost - self.coins[:5], 0)).sum()
         if gold_needed<=self.coins[5]:
             return 1
         else:
