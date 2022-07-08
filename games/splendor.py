@@ -28,7 +28,7 @@ class MuZeroConfig:
 
 
         ### Game
-        self.observation_shape = ( 1,1,3*(187)+90+6+10) #90 cards + 6 types of chips, 1 flop and 3 players, reservation (3*90 cards) # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
+        self.observation_shape = ( 1,1,3*(187)+90+6+10+1) #90 cards + 6 types of chips, 1 flop and 3 players, reservation (3*90 cards) # Dimensions of the game observation, must be 3D (channel, height, width). For a 1D array, please reshape it to (1, 1, length of array)
         self.action_space = list(range(90+90+90+15)) # 90 buy cards, 90 pay reservation, 90 do reservation, 15 chips collection  # Fixed list of all possible actions. You should only edit the length
         self.players = list(range(3)) # List of players. You should only edit the length
         self.stacked_observations = 0 # Number of previous observations and previous actions to add to the current observation
