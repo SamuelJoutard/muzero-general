@@ -16,7 +16,9 @@ from .abstract_game import AbstractGame
 from .Splendor_material.splendor import Splendor_game
 from .Splendor_material.player import Player
 
-import cv2
+# import cv2
+
+import matplotlib.pyplot as plt
 
 
 class MuZeroConfig:
@@ -378,8 +380,10 @@ class Splendor:
         border[2] = 0.5
 
         frame_tot = np.concatenate([frame_player_0, border, frame_game, border, frame_player_1], axis=0)
-
-        cv2.imwrite("./games/Splendor_material/game_state_{}.png".format(self.it), frame_tot)
+        plt.figure()
+        plt.imshow(game.render())
+        plt.show()
+        # cv2.imwrite("./games/Splendor_material/game_state_{}.png".format(self.it), frame_tot)
         return frame_tot
 
 
