@@ -16,6 +16,8 @@ from .abstract_game import AbstractGame
 from .Splendor_material.splendor import Splendor_game
 from .Splendor_material.player import Player
 
+import cv2
+
 
 class MuZeroConfig:
     def __init__(self):
@@ -289,7 +291,9 @@ class Splendor:
             check_splendor = self.game.check_collect_card(card_id)
             if check_player*check_splendor==1:
                 self.game.collect_card(card_id)
-                player.collect_card(card_id)
+                paid = player.collect_card(card_id)
+                print(paid)
+                self.game.coins += paid
                 reward = 1 + player.cards[card_id, 0]
                 check_noble = self.game.check_nobles(player)
                 if check_noble is not None:
@@ -304,7 +308,8 @@ class Splendor:
             card_id = action - 90
             check_player = player.check_pay_reservation(card_id)
             if check_player==1:
-                player.pay_reservation(card_id)
+                paid = player.pay_reservation(card_id)
+                self.game.coins += paid
                 reward = 1 + player.cards[card_id, 0]
                 check_noble = self.game.check_nobles(player)
                 if check_noble is not None:
@@ -354,7 +359,68 @@ class Splendor:
     def legal_actions(self):
         return np.arange(285).tolist()
 
+    def render(self):
+        frame_player_0 = self.players[0].get_frame()
+        frame_player_1 = self.players[1].get_frame()
+        frame_game = self.game.get_frame()
+
+        w_0 = frame_player_0.shape[1]
+        w_1 = frame_player_1.shape[1]
+        w_g = frame_game.shape[1]
+
+        max_w = max(w_0, w_1, w_g)
+
+        frame_player_0 = np.pad(frame_player_0, ((0, 0), (max_w - w_0, 0), (0, 0)), constant_values=0)
+        frame_player_1 = np.pad(frame_player_1, ((0, 0), (max_w - w_1, 0), (0, 0)), constant_values=0)
+        frame_game = np.pad(frame_game, ((0, 0), (max_w - w_g, 0), (0, 0)), constant_values=0)
+
+        border = np.zeros((5, max_w, 3))
+        border[2] = 0.5
+
+        frame_tot = np.concatenate([frame_player_0, border, frame_game, border, frame_player_1], axis=0)
+
+        cv2.imwrite("./games/Splendor_material/game_state_{}.png".format(self.it), frame_tot)
+        return frame_tot
+
+
 if __name__=="__main__":
 
+    import matplotlib.pyplot as plt
+
+    np.random.seed(40)
     game = Splendor()
-    print(game.reset().shape)
+
+
+    print(game.players[0].cards[game.game.flop.astype(bool)])
+    print(np.nonzero(game.game.flop.astype(bool)))
+    
+    obs, r, d = game.step(278)
+    print(r, d)
+    print(game.game.coins)
+    obs, r, d = game.step(275)
+    print(r, d)
+    print(game.game.coins)
+    obs, r, d = game.step(278)
+    print(r, d)
+    print(game.game.coins)
+    obs, r, d = game.step(3)
+    print(r, d)
+    print(game.game.coins)
+    obs, r, d = game.step(25)
+    print(r, d)
+    print(game.game.coins)
+    obs, r, d = game.step(3)
+    print(r, d)
+    print(game.game.coins)
+    print(game.players[0].points)
+
+    print(game.game.check_nobles(game.players[1]))
+
+    plt.figure()
+    plt.imshow(game.render())
+    plt.show()
+
+
+    # obs, r, d = game.step(279)
+    # print(r, d)
+    # print(game.reset().shape)

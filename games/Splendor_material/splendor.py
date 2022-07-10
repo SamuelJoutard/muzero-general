@@ -6,6 +6,8 @@ import torch.nn.functional as F
 
 from .decks_and_nobles import deck0, deck1, deck2, nobles
 
+from .viz_tools import *
+
 
 
 class Splendor_game(object):
@@ -36,10 +38,11 @@ class Splendor_game(object):
         self.card_decks_order["1"] = self.card_decks_order["1"][4:]
         self.card_decks_order["2"] = self.card_decks_order["2"][4:]
 
-
         self.nobles = nobles
         self.nobles_game = np.zeros(10)
         self.nobles_game[np.random.permutation(10)[:4]] = 1
+
+        self.cards = np.concatenate([deck0, deck1, deck2], axis=0)
 
 
     def get_state(self):
@@ -81,7 +84,7 @@ class Splendor_game(object):
         current_colors = (player.cards_bought[:, None] * player.cards[:, 1:6]).sum(0)
         additional_gems_needed = np.maximum(self.nobles - current_colors[None, :], 0).sum(1)
         matching = (additional_gems_needed==0) * self.nobles_game
-        idx = np.nonzero(matching)
+        idx = np.nonzero(matching)[0]
         if len(idx)>0:
             return idx
         else:
@@ -104,3 +107,41 @@ class Splendor_game(object):
                 return 0
         return 1
 
+
+    def get_frame(self):
+        coin_img = draw_coins(self.coins)
+        cards_id = np.nonzero(self.flop)[0]
+        flop = [None] * 12
+        for i, id in enumerate(cards_id):
+            flop_img = draw_card(self.cards[id])
+            flop[i] = flop_img
+
+        flop = [flop[0:4], flop[4:8], flop[8:]]
+
+        flop_im = cat_with_sep(*[cat_with_sep(*f, axis_to_cat=1) for f in flop], axis_to_cat=0)
+
+        nobles_id = np.nonzero(self.nobles_game)[0]
+
+        nobles = [np.zeros((11, 11, 3))]*4
+        for i, id in enumerate(nobles_id):
+            nobles[i] = draw_noble(self.nobles[id])
+
+        x_n, y_n, _ = nobles[0].shape
+
+        nobles_im = cat_with_sep(*nobles, axis_to_cat=0)
+
+        return cat_and_pad(*[coin_img, flop_im, nobles_im], axis_to_pad=0, axis_to_cat=1)
+
+
+
+
+
+if __name__=="__main__":
+
+    import matplotlib.pyplot as plt
+
+    game = Splendor_game()
+
+    plt.figure()
+    plt.imshow(game.get_frame())
+    plt.show()
