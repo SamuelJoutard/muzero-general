@@ -629,6 +629,11 @@ if __name__ == "__main__":
         path_checkpoints = sys.argv[2]
         muzero = MuZero(sys.argv[1], path_checkpoints=path_checkpoints)
         muzero.train()
+    elif len(sys.argv) == 4:
+        path_checkpoints = sys.argv[2]
+        config = json.loads(sys.argv[3])
+        muzero = MuZero(sys.argv[1], config=config, path_checkpoints=path_checkpoints)
+        muzero.train()
     
     
     
