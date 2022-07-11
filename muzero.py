@@ -631,7 +631,7 @@ if __name__ == "__main__":
         muzero.train()
     elif len(sys.argv) == 4:
         path_checkpoints = sys.argv[2]
-        pr = json.loads(sys.argv[3])
+        pr = sys.argv[3]
         muzero = MuZero(sys.argv[1], path_results=pr, path_checkpoints=path_checkpoints)
         muzero.train()
     
