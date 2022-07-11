@@ -39,12 +39,12 @@ class MuZero:
         >>> muzero.test(render=True)
     """
 
-    def __init__(self, game_name, config=None, path_checkpoints=None, split_resources_in=1):
+    def __init__(self, game_name, config=None, path_checkpoints=None, path_results=None, split_resources_in=1):
         # Load the game and the config from the module with the game name
         try:
             game_module = importlib.import_module("games." + game_name)
             self.Game = game_module.Game
-            self.config = game_module.MuZeroConfig()
+            self.config = game_module.MuZeroConfig(path_results=path_results)
         except ModuleNotFoundError as err:
             print(
                 f'{game_name} is not a supported game name, try "cartpole" or refer to the documentation for adding a new game.'
@@ -631,8 +631,8 @@ if __name__ == "__main__":
         muzero.train()
     elif len(sys.argv) == 4:
         path_checkpoints = sys.argv[2]
-        config = json.loads(sys.argv[3])
-        muzero = MuZero(sys.argv[1], config=config, path_checkpoints=path_checkpoints)
+        pr = json.loads(sys.argv[3])
+        muzero = MuZero(sys.argv[1], path_results=pr, path_checkpoints=path_checkpoints)
         muzero.train()
     
     

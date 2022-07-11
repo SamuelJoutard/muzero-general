@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 
 
 class MuZeroConfig:
-    def __init__(self):
+    def __init__(self, path_results=None):
         # fmt: off
         # More information is available here: https://github.com/werner-duvaud/muzero-general/wiki/Hyperparameter-Optimization
 
@@ -87,7 +87,10 @@ class MuZeroConfig:
 
 
         ### Training
-        self.results_path = pathlib.Path(__file__).resolve().parents[1] / "results" / pathlib.Path(__file__).stem / datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")  # Path to store the model weights and TensorBoard logs
+        if path_results is None:
+            self.results_path = pathlib.Path(__file__).resolve().parents[1] / "results" / pathlib.Path(__file__).stem / datetime.datetime.now().strftime("%Y-%m-%d--%H-%M-%S")  # Path to store the model weights and TensorBoard logs
+        else:
+            self.results_path = pathlib.Path(path_results)
         self.save_model = True  # Save the checkpoint in results_path as model.checkpoint
         self.training_steps = 15000  # Total number of training steps (ie weights update according to a batch)
         self.batch_size = 64  # Number of parts of games to train on at each training step
@@ -294,7 +297,6 @@ class Splendor:
             if check_player*check_splendor==1:
                 self.game.collect_card(card_id)
                 paid = player.collect_card(card_id)
-                print(paid)
                 self.game.coins += paid
                 reward = 1 + player.cards[card_id, 0]
                 check_noble = self.game.check_nobles(player)
@@ -381,7 +383,7 @@ class Splendor:
 
         frame_tot = np.concatenate([frame_player_0, border, frame_game, border, frame_player_1], axis=0)
         plt.figure()
-        plt.imshow(game.render())
+        plt.imshow(frame_tot)
         plt.show()
         # cv2.imwrite("./games/Splendor_material/game_state_{}.png".format(self.it), frame_tot)
         return frame_tot
